@@ -11,18 +11,13 @@ a { text-decoration: none }
 </style>
 </head>
 <body>
-<pre><b><a href="http://sheetjs.com">SheetJS AJAX Live Demo</a></b>
-(this demo works back to IE6)
 
-<a href="https://github.com/SheetJS/js-xlsx">Github Repo</a>
-<a href="https://github.com/SheetJS/js-xlsx/issues">Issues?  Something look weird?  Click here and report an issue</a>
-<br/><div id="fileurl"></div>
-</pre>
 <pre id="out"></pre>
 <br />
 <script src="http://oss.sheetjs.com/js-xlsx/iemagic.js"></script>
 <script src="http://oss.sheetjs.com/js-xlsx/shim.js"></script>
-<script src=" http://oss.sheetjs.com/js-xlsx/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.2/xlsx.core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
 <script>
 function to_csv(workbook) {
 	var result = [];
@@ -40,8 +35,7 @@ function to_csv(workbook) {
 
 function process_wb(wb) {
 	var output = to_csv(wb);
-	if(out.innerText === undefined) out.textContent = output;
-	else out.innerText = output;
+
 	if(typeof console !== 'undefined') console.log("output", new Date());
 }
 
@@ -52,7 +46,7 @@ if(window.XMLHttpRequest) oReq = new XMLHttpRequest();
 else if(window.ActiveXObject) oReq = new ActiveXObject('MSXML2.XMLHTTP.3.0');
 else throw "XHR unavailable for your browser";
 
-document.getElementById('fileurl').innerHTML = '<a href="' + url + '">Download file</a>';
+
 
 oReq.open("GET", url, true);
 
@@ -111,7 +105,7 @@ function make_ecraf_vendor_chart(workbook)
 		if(typeof object != 'undefined') value = object.w;
 		vendor.push(value);
 	}
-
+ShowChart(ecraf, vendor, "chartjs-1");
 	console.log("output", ecraf);
 }
 
@@ -127,5 +121,67 @@ function make_ecraf_vendor_chart(workbook)
 		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 	})();
 </script>
+
+
+<div class="">
+	<canvas id="chartjs-1" class="chartjs" width="791" height="395" style="display: block; height: 316px; width: 633px;"></canvas>
+	<script>
+
+	var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct", "Nov", "Dec"];
+	// For drawing the lines
+	var africa = [86,114,106,106,107,111,133,221,783,2478];
+	var asia = [282,350,411,502,635,809,947,1402,3700,5267];
+	var europe = [168,170,178,190,203,276,408,547,675,734];
+	var latinAmerica = [40,20,10,16,24,38,74,167,508,784];
+	var northAmerica = [6,3,2,2,7,26,82,172,312,433];
+	function ShowChart(set1, set2, canvasid)
+	{
+		new Chart(document.getElementById(canvasid),
+	{
+		type: 'bar',
+		data: {
+		labels: months,
+		datasets: [{
+				data: set1,
+				label: "eCraf",
+				borderColor:
+					"rgba(255, 99, 132, 0.2)"
+				,
+				"borderWidth": 1,
+				backgroundColor:
+
+					"rgba(255, 99, 132, 0.2)"
+				,
+				fill: false
+
+			},
+			{
+					data: set2,
+					label: "Vendor",
+					borderColor:
+						"rgba(0, 99, 132, 0.2)"
+					,
+					"borderWidth": 1,
+					backgroundColor:
+
+						"rgba(0, 99, 132, 0.2)"
+					,
+					fill: false
+
+				}
+		]
+		},
+		options: {
+		title: {
+			display: true,
+			text: 'eCrafs Processed / Vendors Created'
+		}
+		}
+		}
+	);
+}
+
+	</script>
+</div>
 </body>
 </html>
