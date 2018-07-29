@@ -26,6 +26,9 @@
   <script src="http://oss.sheetjs.com/js-xlsx/shim.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.2/xlsx.core.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://docs.handsontable.com/pro/bower_components/handsontable-pro/dist/handsontable.full.min.css">
+  <link rel="stylesheet" type="text/css" href="https://handsontable.com/static/css/main.css">
   <script>
     function to_csv(workbook) {
       var result = [];
@@ -82,6 +85,7 @@
       make_srp_chart(wb);
       make_tpo_chart(wb);
       make_rap_chart(wb);
+      make_table(wb);
     }
 
     function process_loaded_fail() {
@@ -109,14 +113,22 @@
 
     function make_srp_chart(workbook) {
       make_chart_from_data(workbook, 'B', '', 'service-requests-processed', 'SRP', '', 'Service Requests Processed', 'horizontalBar');
+      make_chart_from_data(workbook, 'B', '', 'service-requests-processed-dup', 'SRP', '', 'Service Requests Processed', 'horizontalBar');
     }
 
     function make_tpo_chart(workbook) {
       make_chart_from_data(workbook, 'C', '', 'third-party-oversights-performed', 'TPO', '', 'Third Party Oversights Performed', 'horizontalBar');
+      make_chart_from_data(workbook, 'C', '', 'third-party-oversights-performed-dup', 'TPO', '', 'Third Party Oversights Performed', 'horizontalBar');
     }
 
     function make_rap_chart(workbook) {
       make_chart_from_data(workbook, 'D', '', 'risk-assesments-performed', 'RAP', '', 'Risk Assesments Performed', 'horizontalBar');
+      make_chart_from_data(workbook, 'D', '', 'risk-assesments-performed-dup', 'RAP', '', 'Risk Assesments Performed', 'horizontalBar');
+    }
+
+    function make_table(workbook) {
+      var json = XLSX.utils.sheet_to_json(workbook.Sheets['Assessments']);
+      make_table_from_data(json);
     }
 
     function make_chart_from_data(workbook, column1, column2, className, legend1, legend2, caption, chartType) {
@@ -148,11 +160,7 @@
   <script>
     var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     // For drawing the lines
-    var africa = [86, 114, 106, 106, 107, 111, 133, 221, 783, 2478];
-    var asia = [282, 350, 411, 502, 635, 809, 947, 1402, 3700, 5267];
-    var europe = [168, 170, 178, 190, 203, 276, 408, 547, 675, 734];
-    var latinAmerica = [40, 20, 10, 16, 24, 38, 74, 167, 508, 784];
-    var northAmerica = [6, 3, 2, 2, 7, 26, 82, 172, 312, 433];
+
 
     function ShowChart(set1, set2, canvasid, legend1, legend2, caption, chartType) {
       var canvas = document.getElementById(canvasid);
@@ -163,11 +171,9 @@
       dataset.push({
         data: set1,
         label: legend1,
-        borderColor: "rgba(255, 99, 132, 0.2)",
+        borderColor: "rgba(0, 99, 132, 0.2)",
         "borderWidth": 1,
-        backgroundColor:
-
-          "rgba(255, 99, 132, 0.2)",
+        backgroundColor: "rgba(0, 99, 132, 0.2)",
         fill: false
 
       });
@@ -176,11 +182,9 @@
         dataset.push({
           data: set2,
           label: legend2,
-          borderColor: "rgba(0, 99, 132, 0.2)",
+          borderColor: "rgba(255, 99, 132, 0.2)",
           "borderWidth": 1,
-          backgroundColor:
-
-            "rgba(0, 99, 132, 0.2)",
+          backgroundColor: "rgba(255, 99, 132, 0.2)",
           fill: false
 
         });
@@ -200,6 +204,76 @@
           maintainAspectRatio: false
         }
       });
+    }
+  </script>
+
+  <script>
+    function make_table_from_data(json) {
+      var dataObject = [];
+      dataObject = json;
+
+      var hotElement = document.querySelector('#hot');
+      var hotElementContainer = hotElement.parentNode;
+      var hotSettings = {
+        data: dataObject,
+        columns: [{
+            data: 'TASK',
+            type: 'text'
+          },
+          {
+            data: 'Nam',
+            type: 'text'
+          },
+          {
+            data: 'VENDORS',
+            type: 'text'
+          },
+          {
+            data: 'Biz Owner',
+            type: 'text'
+          },
+          {
+            data: 'Due Date',
+            type: 'text'
+          },
+          {
+            data: 'Last Update',
+            type: 'text'
+          },
+          {
+            data: 'Completed',
+            type: 'text'
+          },
+          {
+            data: 'Update Notes',
+            type: 'text'
+          }
+        ],
+        stretchH: 'all',
+        width: 1200,
+        autoWrapRow: true,
+        height: 487,
+        maxRows: 22,
+        manualRowResize: true,
+        manualColumnResize: true,
+        rowHeaders: true,
+        colHeaders: [
+          'Task',
+          'Name',
+          'Vendors',
+          'Biz Owner',
+          'Due Date',
+          'Last Update',
+          'Completed',
+          'Update Notes'
+        ],
+        manualRowMove: true,
+        manualColumnMove: true,
+        contextMenu: true,
+        filters: true,
+        dropdownMenu: true
+      };
+      var hot = new Handsontable(hotElement, hotSettings);
     }
   </script>
   <title>Rob Heim's Status Page</title>
@@ -302,7 +376,7 @@
         <div class="col-sm-3 col-md-3">
           <div class="wow fadeInUp" data-wow-delay="0.2s">
             <div class="box text-center">
-              <canvas id="service-requests-processed" width="390" height="400"></canvas>
+              <canvas id="service-requests-processed-dup" width="390" height="400"></canvas>
               <h4 class="h-bold">Service Requests</h4>
             </div>
           </div>
@@ -310,7 +384,7 @@
         <div class="col-sm-3 col-md-3">
           <div class="wow fadeInUp" data-wow-delay="0.2s">
             <div class="box text-center">
-              <canvas id="third-party-oversights-performed" width="390" height="400"></canvas>
+              <canvas id="third-party-oversights-performed-dup" width="390" height="400"></canvas>
               <h4 class="h-bold">3rd Party Oversights</h4>
             </div>
           </div>
@@ -318,7 +392,7 @@
         <div class="col-sm-3 col-md-3">
           <div class="wow fadeInUp" data-wow-delay="0.2s">
             <div class="box text-center">
-              <canvas id="risk-assesments-performed" width="390" height="400"></canvas>
+              <canvas id="risk-assesments-performed-dup" width="390" height="400"></canvas>
               <h4 class="h-bold">Risk Assessments</h4>
             </div>
           </div>
@@ -365,7 +439,7 @@
         <div class="col-sm-6 col-md-6">
           <div class="wow fadeInUp" data-wow-delay="0.2s"><br><br><br><br>
             <p class="bold text-left">RISK ASSESSMENTS</p>
-            <img src="img/dummy/assess.jpg" width="1000" height="650">
+            <div id="hot"></div>
           </div>
         </div>
         <div class="col-sm-3 col-md-3">
