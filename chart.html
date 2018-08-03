@@ -50,7 +50,15 @@
 
     function loadXLSX(name)
     {
-      var url = "./ITRMStats.xlsx";
+      var arrayLength = charts.length;
+      for (var i = 0; i < arrayLength; i++) {
+          charts[i].destroy();
+          //Do something
+      }
+      var url = "./Rob_ITRMStats.xlsx";
+      if(name == 'rob') url = "./Rob_ITRMStats.xlsx";
+      else if(name == 'kip') url = "./Kip_ITRMStats.xlsx";
+      else if(name == 'Stambaugh') url = "./Stambaugh_ITRMStats.xlsx";
       var oReq;
       if (window.XMLHttpRequest) oReq = new XMLHttpRequest();
       else if (window.ActiveXObject) oReq = new ActiveXObject('MSXML2.XMLHTTP.3.0');
@@ -69,11 +77,12 @@
             type: "array"
           });
           process_wb(wb);
-          make_ecraf_vendor_chart(wb, name);
-          make_udp_chart(wb, name);
-          make_srp_chart(wb, name);
-          make_tpo_chart(wb, name);
-          make_rap_chart(wb, name);
+          make_ecraf_vendor_chart(wb);
+          make_udp_chart(wb);
+          make_srp_chart(wb);
+          make_tpo_chart(wb);
+          make_rap_chart(wb);
+          make_table(wb);
         };
       } else {
         process_loaded_fail();
@@ -100,8 +109,8 @@
 
       if (typeof console !== 'undefined') console.log("output", new Date());
     }
-
-    var url = "./ITRMStats.xlsx";
+    var charts = [];
+    var url = "./Rob_ITRMStats.xlsx";
     var oReq;
     if (window.XMLHttpRequest) oReq = new XMLHttpRequest();
     else if (window.ActiveXObject) oReq = new ActiveXObject('MSXML2.XMLHTTP.3.0');
@@ -272,6 +281,7 @@
           maintainAspectRatio: false
         }
       });
+      charts.push(myChart);
     }
   </script>
 
